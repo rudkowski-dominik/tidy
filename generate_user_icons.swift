@@ -9,12 +9,29 @@ guard let srcImg = NSImage(contentsOfFile: srcPath),
     fatalError("Failed to load source image")
 }
 
-// Bounding box of the squircle in the source image
-// Light icon: x = 42, y = 264, size = 452 x 452
-// Dark icon:  x = 531, y = 265, size = 452 x 452
+// In the source 1024x1024 mockup image:
+// Light squircle: center ~ (268.0, 484.5), full size ~ 444 x 441 px
+// Dark squircle:  center ~ (758.0, 484.5), full size ~ 444 x 441 px
+//
+// We inset the crop slightly (432 x 432 px) so that the crop box sits STRICTLY
+// inside the squircle perimeter. This guarantees that ZERO white pixels from the
+// mockup background canvas can ever bleed into the squircle corners or borders!
 
-let lightCropRect = CGRect(x: 42, y: 264, width: 452, height: 452)
-let darkCropRect  = CGRect(x: 531, y: 265, width: 452, height: 452)
+let cropSize: CGFloat = 432.0
+
+let lightCropRect = CGRect(
+    x: 268.0 - cropSize / 2.0,
+    y: 484.5 - cropSize / 2.0,
+    width: cropSize,
+    height: cropSize
+)
+
+let darkCropRect = CGRect(
+    x: 758.0 - cropSize / 2.0,
+    y: 484.5 - cropSize / 2.0,
+    width: cropSize,
+    height: cropSize
+)
 
 guard let lightCropped = cgSrc.cropping(to: lightCropRect),
       let darkCropped  = cgSrc.cropping(to: darkCropRect) else {
@@ -39,44 +56,35 @@ func generateIcon(croppedCG: CGImage, pixelSize: Int, isDark: Bool) -> Data? {
 
     let scale = size / 1024.0
 
-    // Standard macOS squircle grid
+    // Standard macOS squircle grid: 824x824 squircle centered in 1024x1024 canvas
     let bodySize: CGFloat = 824.0 * scale
-    let bodyOrigin: CGFloat = 100.0 * scale
+    let bodyOrigin: CGFloat = (size - bodySize) / 2.0 // 100.0 * scale
     let cornerRadius: CGFloat = 185.0 * scale
     let destRect = CGRect(x: bodyOrigin, y: bodyOrigin, width: bodySize, height: bodySize)
     let squirclePath = CGPath(roundedRect: destRect, cornerWidth: cornerRadius, cornerHeight: cornerRadius, transform: nil)
 
-    // 1. Subtle drop shadow
+    // 1. Soft native macOS drop shadow behind squircle
     context.saveGState()
     context.setShadow(
-        offset: CGSize(width: 0, height: -10.0 * scale),
-        blur: 20.0 * scale,
-        color: NSColor.black.withAlphaComponent(isDark ? 0.40 : 0.22).cgColor
+        offset: CGSize(width: 0, height: -12.0 * scale),
+        blur: 24.0 * scale,
+        color: NSColor.black.withAlphaComponent(isDark ? 0.38 : 0.22).cgColor
     )
     context.addPath(squirclePath)
-    context.setFillColor(NSColor.black.withAlphaComponent(0.01).cgColor)
+    context.setFillColor(isDark ? NSColor(calibratedRed: 0.08, green: 0.12, blue: 0.25, alpha: 1.0).cgColor : NSColor.white.cgColor)
     context.fillPath()
     context.restoreGState()
 
-    // 2. Draw cropped artwork clipped to squircle
+    // 2. Draw artwork clipped to squircle (RIGHT-SIDE UP, NO FLIP!)
     context.saveGState()
     context.addPath(squirclePath)
     context.clip()
 
-    // Flip coordinates for drawing CGImage
-    context.saveGState()
-    context.translateBy(x: destRect.minX, y: destRect.maxY)
-    context.scaleBy(x: 1.0, y: -1.0)
-    context.draw(croppedCG, in: CGRect(x: 0, y: 0, width: destRect.width, height: destRect.height))
+    // Draw directly into destRect - right-side up!
+    context.draw(croppedCG, in: destRect)
     context.restoreGState()
 
-    // 3. Subtle inner border highlight
-    context.setStrokeColor(NSColor.white.withAlphaComponent(isDark ? 0.25 : 0.40).cgColor)
-    context.setLineWidth(1.5 * scale)
-    context.addPath(squirclePath)
-    context.strokePath()
-
-    context.restoreGState()
+    // NO artificial stroke / border! The artwork's own natural lighting and frosted glass provide the edge.
 
     guard let cgResult = context.makeImage() else { return nil }
     let rep = NSBitmapImageRep(cgImage: cgResult)
@@ -115,4 +123,4 @@ if let dark1024 = generateIcon(croppedCG: darkCropped, pixelSize: 1024, isDark: 
     try? dark1024.write(to: URL(fileURLWithPath: "Tidy/Resources/AppIconDark.png"))
 }
 
-print("Successfully generated user Light and Dark mode app icons.")
+print("Successfully generated user Light and Dark mode app icons (right-side up, clean squircle, no borders).")
