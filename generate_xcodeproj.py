@@ -57,7 +57,7 @@ def main():
         file_refs[path] = (f_id, name)
         build_files[path] = bf_id
 
-    # Assets & strings
+    # Assets & strings & images
     assets_path = "Tidy/Resources/Assets.xcassets"
     assets_id = gen_id()
     assets_build_id = gen_id()
@@ -69,6 +69,20 @@ def main():
     strings_build_id = gen_id()
     file_refs[strings_path] = (strings_id, "Localizable.xcstrings")
     build_files[strings_path] = strings_build_id
+
+    icon_light_path = "Tidy/Resources/AppIconLight.png"
+    icon_light_build_id = gen_id()
+    if os.path.exists(icon_light_path):
+        f_id = gen_id()
+        file_refs[icon_light_path] = (f_id, "AppIconLight.png")
+        build_files[icon_light_path] = icon_light_build_id
+
+    icon_dark_path = "Tidy/Resources/AppIconDark.png"
+    icon_dark_build_id = gen_id()
+    if os.path.exists(icon_dark_path):
+        f_id = gen_id()
+        file_refs[icon_dark_path] = (f_id, "AppIconDark.png")
+        build_files[icon_dark_path] = icon_dark_build_id
 
     plist_path = "Tidy/Resources/Info.plist"
     plist_id = gen_id()
@@ -123,6 +137,8 @@ def main():
             content += f"\t\t{f_id} /* {name} */ = {{isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = \"{path}\"; sourceTree = SOURCE_ROOT; }};\n"
         elif path.endswith(".entitlements"):
             content += f"\t\t{f_id} /* {name} */ = {{isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = \"{path}\"; sourceTree = SOURCE_ROOT; }};\n"
+        elif path.endswith(".png"):
+            content += f"\t\t{f_id} /* {name} */ = {{isa = PBXFileReference; lastKnownFileType = image.png; path = \"{path}\"; sourceTree = SOURCE_ROOT; }};\n"
 
     content += f"""/* End PBXFileReference section */
 
@@ -267,7 +283,13 @@ def main():
 \t\t\tfiles = (
 \t\t\t\t{assets_build_id} /* Assets.xcassets in Resources */,
 \t\t\t\t{strings_build_id} /* Localizable.xcstrings in Resources */,
-\t\t\t);
+"""
+    if os.path.exists(icon_light_path):
+        content += f"\t\t\t\t{icon_light_build_id} /* AppIconLight.png in Resources */,\n"
+    if os.path.exists(icon_dark_path):
+        content += f"\t\t\t\t{icon_dark_build_id} /* AppIconDark.png in Resources */,\n"
+
+    content += f"""\t\t\t);
 \t\t\trunOnlyForDeploymentPostprocessing = 0;
 \t\t}};
 /* End PBXResourcesBuildPhase section */

@@ -20,17 +20,11 @@ public struct DuplicatesView: View {
             // Action bar
             VStack(alignment: .leading, spacing: 10) {
                 HStack(alignment: .center, spacing: 16) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Wyszukiwarka duplikatów")
-                            .font(.title2)
-                            .fontWeight(.bold)
+                    Text("Wieloetapowa weryfikacja (rozmiar → częściowy hash → SHA-256). Oryginał jest chroniony, zaznaczane są tylko zbędne kopie.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
 
-                        Text("Wieloetapowa weryfikacja (rozmiar → częściowy hash → SHA-256). Oryginał jest chroniony, zaznaczane są tylko zbędne kopie.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
+                    Spacer(minLength: 16)
 
                     Button {
                         chooseCustomFolder()

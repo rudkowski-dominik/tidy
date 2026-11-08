@@ -20,7 +20,9 @@ let package = Package(
             ],
             resources: [
                 .process("Resources/Assets.xcassets"),
-                .process("Resources/Localizable.xcstrings")
+                .process("Resources/Localizable.xcstrings"),
+                .copy("Resources/AppIconLight.png"),
+                .copy("Resources/AppIconDark.png")
             ]
         ),
         .testTarget(

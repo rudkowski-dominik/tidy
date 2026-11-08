@@ -19,7 +19,7 @@ public enum NavigationSection: String, CaseIterable, Identifiable {
         case .junk: return "trash"
         case .duplicates: return "doc.on.doc"
         case .largeFiles: return "arrow.up.and.down.and.sparkles"
-        case .applications: return "app.badge"
+        case .applications: return "square.stack.3d.up"
         case .treemap: return "square.grid.3x3"
         case .settings: return "gearshape"
         }

@@ -23,17 +23,11 @@ public struct JunkCleanerView: View {
             // Top Toolbar / Action Bar
             VStack(alignment: .leading, spacing: 10) {
                 HStack(alignment: .center, spacing: 14) {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("Śmieci systemowe i aplikacji")
-                            .font(.title2)
-                            .fontWeight(.bold)
+                    Text("Bezpieczne usuwanie pamięci podręcznej, dzienników, instalatorów i plików Xcode bez naruszania Twoich dokumentów.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
 
-                        Text("Bezpieczne usuwanie pamięci podręcznej, dzienników, instalatorów i plików Xcode bez naruszania Twoich dokumentów.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
+                    Spacer(minLength: 16)
 
                     // Selection buttons
                     HStack(spacing: 8) {

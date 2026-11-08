@@ -15,17 +15,11 @@ public struct TreemapView: View {
         VStack(spacing: 0) {
             // Header Bar
             HStack(spacing: 16) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Interaktywna mapa dysku")
-                        .font(.title2)
-                        .fontWeight(.bold)
+                Text("Wizualna mapa zajętości folderów. Kliknij blok, aby wejść głębiej, lub kliknij prawym przyciskiem, aby przenieść do Kosza.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
 
-                    Text("Wizualna mapa zajętości folderów. Kliknij blok, aby wejść głębiej, lub kliknij prawym przyciskiem, aby przenieść do Kosza.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer()
+                Spacer(minLength: 16)
 
                 Button {
                     chooseFolder()

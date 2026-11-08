@@ -36,17 +36,11 @@ public struct AppUninstallerView: View {
             // Header bar
             VStack(alignment: .leading, spacing: 10) {
                 HStack(alignment: .center, spacing: 14) {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("Aplikacje i pozostałości")
-                            .font(.title2)
-                            .fontWeight(.bold)
+                    Text("Kompletne usuwanie aplikacji wraz z plikami z Biblioteki oraz sprzątanie danych po dawno skasowanych programach.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
 
-                        Text("Kompletne usuwanie aplikacji wraz z plikami z Biblioteki oraz sprzątanie danych po dawno skasowanych programach.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
+                    Spacer(minLength: 16)
 
                     HStack(spacing: 8) {
                         Button {

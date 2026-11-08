@@ -5,10 +5,14 @@ import AppKit
 struct TidyApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @AppStorage("tidy_show_menu_bar_extra") private var showMenuBarExtra: Bool = false
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some Scene {
         WindowGroup {
             MainView()
+                .onChange(of: colorScheme) { _, _ in
+                    AppIconManager.shared.applyIcon()
+                }
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: true))
@@ -45,6 +49,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Configure native window appearance
         NSApp.setActivationPolicy(.regular)
+        AppIconManager.shared.applyIcon()
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {

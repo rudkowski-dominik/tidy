@@ -31,32 +31,17 @@ public struct LargeFilesView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            // Row 1: Title & Actions
-            VStack(alignment: .leading, spacing: 10) {
+            // Header Bar
+            VStack(alignment: .leading, spacing: 12) {
+                // Row 1: Subtitle & Main Action Buttons
                 HStack(alignment: .center, spacing: 14) {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("Duże i nieużywane zasoby")
-                            .font(.title2)
-                            .fontWeight(.bold)
+                    Text("Wyszukuj pliki zajmujące najwięcej miejsca na dysku oraz rzadko otwierane programy.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
 
-                        Text("Przeglądaj pliki zajmujące najwięcej miejsca na dysku oraz aplikacje, których nie otwierałeś od miesięcy.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
+                    Spacer(minLength: 16)
 
                     HStack(spacing: 8) {
-                        if selectedTab == 0 && !filteredLargeFiles.isEmpty {
-                            Button {
-                                toggleSelectAllLargeFiles()
-                            } label: {
-                                Label(allFilteredSelected ? "Odznacz wszystkie" : "Zaznacz wszystkie",
-                                      systemImage: allFilteredSelected ? "checkmark.circle.fill" : "checkmark.circle")
-                            }
-                            .buttonStyle(.bordered)
-                        }
-
                         Button {
                             appState.scanLargeFilesOnly(minSize: Int64(minSizeMB * 1024 * 1024))
                         } label: {
@@ -82,60 +67,14 @@ public struct LargeFilesView: View {
                     }
                 }
 
-                // Row 2: Segmented Switcher & Filters Strip
-                HStack(spacing: 16) {
+                // Row 2: Segmented Switcher & Stats
+                HStack(spacing: 14) {
                     Picker("", selection: $selectedTab) {
                         Text("Duże pliki (\(filteredLargeFiles.count))").tag(0)
                         Text("Nieużywane programy (\(appState.unusedApps.count))").tag(1)
                     }
                     .pickerStyle(.segmented)
-                    .frame(maxWidth: 320)
-
-                    Divider().frame(height: 18)
-
-                    if selectedTab == 0 {
-                        // Category Picker
-                        Picker("Typ:", selection: $selectedCategory) {
-                            ForEach(FileCategory.allCases) { cat in
-                                Text(cat.rawValue).tag(cat)
-                            }
-                        }
-                        .pickerStyle(.menu)
-
-                        Divider().frame(height: 18)
-
-                        // Threshold Slider
-                        HStack(spacing: 8) {
-                            Text("Próg: > \(Int(minSizeMB)) MB")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-
-                            Slider(value: $minSizeMB, in: 25...1000, step: 25)
-                                .frame(width: 110)
-                        }
-                    } else {
-                        // Unused Age Picker
-                        HStack(spacing: 8) {
-                            Text("Nieużywane od:")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-
-                            Picker("", selection: $unusedMonths) {
-                                Text("1 miesiąca").tag(1)
-                                Text("3 miesięcy").tag(3)
-                                Text("6 miesięcy").tag(6)
-                                Text("1 roku").tag(12)
-                            }
-                            .pickerStyle(.menu)
-                            .frame(width: 130)
-                            .onChange(of: unusedMonths) { _, _ in
-                                Task {
-                                    let apps = await LargeFilesScanner.shared.scanUnusedApps(olderThanMonths: unusedMonths)
-                                    appState.unusedApps = apps
-                                }
-                            }
-                        }
-                    }
+                    .frame(maxWidth: 340)
 
                     Spacer()
 
@@ -146,8 +85,78 @@ public struct LargeFilesView: View {
                             .foregroundStyle(.purple)
                     }
                 }
+
+                // Row 3: Dedicated Filter Strip (No horizontal crowding!)
+                if selectedTab == 0 {
+                    HStack(spacing: 16) {
+                        // Category Picker with ample room
+                        HStack(spacing: 6) {
+                            Text("Typ:")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Picker("", selection: $selectedCategory) {
+                                ForEach(FileCategory.allCases) { cat in
+                                    Text(cat.rawValue).tag(cat)
+                                }
+                            }
+                            .pickerStyle(.menu)
+                            .frame(minWidth: 140)
+                        }
+
+                        Divider().frame(height: 16)
+
+                        // Threshold Slider with plenty of space
+                        HStack(spacing: 8) {
+                            Text("Próg: > \(Int(minSizeMB)) MB")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+
+                            Slider(value: $minSizeMB, in: 25...1000, step: 25)
+                                .frame(width: 140)
+                        }
+
+                        Spacer()
+
+                        if !filteredLargeFiles.isEmpty {
+                            Button {
+                                toggleSelectAllLargeFiles()
+                            } label: {
+                                Label(allFilteredSelected ? "Odznacz wszystkie" : "Zaznacz wszystkie",
+                                      systemImage: allFilteredSelected ? "checkmark.circle.fill" : "checkmark.circle")
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                        }
+                    }
+                    .padding(.top, 2)
+                } else {
+                    HStack(spacing: 12) {
+                        Text("Nieużywane od:")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        Picker("", selection: $unusedMonths) {
+                            Text("1 miesiąca").tag(1)
+                            Text("3 miesięcy").tag(3)
+                            Text("6 miesięcy").tag(6)
+                            Text("1 roku").tag(12)
+                        }
+                        .pickerStyle(.menu)
+                        .frame(width: 140)
+                        .onChange(of: unusedMonths) { _, _ in
+                            Task {
+                                let apps = await LargeFilesScanner.shared.scanUnusedApps(olderThanMonths: unusedMonths)
+                                appState.unusedApps = apps
+                            }
+                        }
+
+                        Spacer()
+                    }
+                    .padding(.top, 2)
+                }
             }
-            .padding()
+            .padding(.horizontal, 20)
+            .padding(.vertical, 14)
             .background(.ultraThinMaterial)
 
             Divider()

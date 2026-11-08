@@ -59,12 +59,14 @@ public struct SidebarView: View {
                         Label(NavigationSection.applications.rawValue, systemImage: NavigationSection.applications.icon)
                         Spacer()
                         if !appState.orphanedApps.isEmpty {
-                            Text("\(appState.orphanedApps.count) pozostałości")
+                            Text("\(appState.orphanedApps.count)")
                                 .font(.caption2)
+                                .fontWeight(.medium)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
                                 .background(Capsule().fill(Color.purple.opacity(0.15)))
                                 .foregroundStyle(Color.purple)
+                                .help("\(appState.orphanedApps.count) pozostałości po odinstalowanych programach")
                         }
                     }
                 }
