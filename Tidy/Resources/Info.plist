@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleExecutable</key>
+    <string>Tidy</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.tidy.cleaner</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>Tidy</string>
+    <key>CFBundleDisplayName</key>
+    <string>Tidy</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>14.0</string>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>NSDesktopFolderUsageDescription</key>
+    <string>Tidy wymaga dostępu do Biurka w celu wykrywania duplikatów i nieużywanych plików.</string>
+    <key>NSDocumentsFolderUsageDescription</key>
+    <string>Tidy wymaga dostępu do Dokumentów w celu wykrywania zbędnych plików i duplikatów.</string>
+    <key>NSDownloadsFolderUsageDescription</key>
+    <string>Tidy wymaga dostępu do folderu Pobrane w celu usunięcia starych instalatorów i duplikatów.</string>
+    <key>NSSystemAdministrationUsageDescription</key>
+    <string>Tidy wymaga uprawnień do bezpiecznego zarządzania pozostałościami aplikacji w bibliotece systemowej.</string>
+</dict>
+</plist>
