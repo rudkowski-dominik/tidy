@@ -40,6 +40,8 @@ public struct LargeFilesView: View {
                     Text("Wyszukuj pliki zajmujące najwięcej miejsca na dysku oraz rzadko otwierane programy.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
 
                     Spacer(minLength: 16)
 
@@ -68,6 +70,7 @@ public struct LargeFilesView: View {
                             .keyboardShortcut(.delete, modifiers: [])
                         }
                     }
+                    .layoutPriority(1)
                 }
 
                 // Row 2: Segmented Switcher & Stats

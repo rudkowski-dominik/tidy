@@ -11,71 +11,80 @@ public struct AuditLogView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             // Header Bar
-            HStack(spacing: 12) {
+            HStack(alignment: .center, spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Dziennik operacji i audyt")
                         .font(.title3)
                         .fontWeight(.bold)
 
-                    Text("Lokalny rejestr wszystkich wykonanych operacji z możliwością przywrócenia plików z Kosza.")
+                    Text("Lokalny rejestr wykonanych operacji z możliwością przywrócenia plików z Kosza.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 }
 
-                Spacer()
+                Spacer(minLength: 12)
 
-                Menu {
+                HStack(spacing: 8) {
                     Button {
-                        exportCSV()
-                    } label: {
-                        Label("Zapisz jako CSV...", systemImage: "tablecells")
-                    }
-
-                    Button {
-                        exportJSON()
-                    } label: {
-                        Label("Zapisz jako JSON...", systemImage: "curlybraces")
-                    }
-
-                    Divider()
-
-                    Button {
-                        copyToClipboard()
-                    } label: {
-                        Label("Kopiuj do schowka", systemImage: "doc.on.doc")
-                    }
-                } label: {
-                    Label("Eksportuj", systemImage: "square.and.arrow.up")
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.regular)
-
-                Button {
-                    loadLogs()
-                } label: {
-                    Image(systemName: "arrow.clockwise")
-                }
-                .buttonStyle(.bordered)
-                .help("Odśwież wpisy")
-
-                Button("Otwórz folder logów") {
-                    Task {
-                        let dir = await AuditLogger.shared.logDirectoryURL
-                        QuickLookHelper.revealInFinder(url: dir)
-                    }
-                }
-                .buttonStyle(.bordered)
-
-                Button("Wyczyść historię", role: .destructive) {
-                    Task {
-                        await AuditLogger.shared.clearLogs()
                         loadLogs()
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
                     }
+                    .buttonStyle(.bordered)
+                    .help("Odśwież wpisy")
+
+                    Menu {
+                        Button {
+                            exportCSV()
+                        } label: {
+                            Label("Zapisz jako CSV...", systemImage: "tablecells")
+                        }
+
+                        Button {
+                            exportJSON()
+                        } label: {
+                            Label("Zapisz jako JSON...", systemImage: "curlybraces")
+                        }
+
+                        Divider()
+
+                        Button {
+                            copyToClipboard()
+                        } label: {
+                            Label("Kopiuj do schowka", systemImage: "doc.on.doc")
+                        }
+
+                        Divider()
+
+                        Button {
+                            Task {
+                                let dir = await AuditLogger.shared.logDirectoryURL
+                                QuickLookHelper.revealInFinder(url: dir)
+                            }
+                        } label: {
+                            Label("Pokaż folder logów w Finderze", systemImage: "folder")
+                        }
+
+                        Divider()
+
+                        Button(role: .destructive) {
+                            Task {
+                                await AuditLogger.shared.clearLogs()
+                                loadLogs()
+                            }
+                        } label: {
+                            Label("Wyczyść historię operacji", systemImage: "trash")
+                        }
+                    } label: {
+                        Label("Eksport i akcje", systemImage: "square.and.arrow.up")
+                    }
+                    .buttonStyle(.bordered)
                 }
-                .buttonStyle(.bordered)
+                .layoutPriority(1)
             }
-            .padding(.horizontal)
-            .padding(.top, 10)
+            .padding(.horizontal, 24)
+            .padding(.top, 12)
 
             Divider()
 

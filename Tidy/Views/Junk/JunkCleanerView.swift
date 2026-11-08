@@ -26,6 +26,8 @@ public struct JunkCleanerView: View {
                     Text("Bezpieczne usuwanie pamięci podręcznej, dzienników, instalatorów i plików Xcode bez naruszania Twoich dokumentów.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
 
                     Spacer(minLength: 16)
 
@@ -69,6 +71,7 @@ public struct JunkCleanerView: View {
                         .disabled(selectedTotalBytes == 0)
                         .keyboardShortcut(.delete, modifiers: [])
                     }
+                    .layoutPriority(1)
                 }
 
                 // Summary status pill

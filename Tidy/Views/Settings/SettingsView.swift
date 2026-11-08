@@ -8,12 +8,14 @@ public struct SettingsView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            // Header Bar (No duplicate "Ustawienia" title; window titlebar already shows it)
+            // Header Bar
             HStack(alignment: .center, spacing: 16) {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("Dostosuj tryb działania aplikacji, uprawnienia systemowe oraz historię operacji.")
+                    Text("Dostosuj tryb działania aplikacji, uprawnienia oraz historię.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
                 Spacer(minLength: 16)
@@ -23,9 +25,10 @@ public struct SettingsView: View {
                     Text("Dziennik operacji").tag(1)
                 }
                 .pickerStyle(.segmented)
-                .frame(width: 280)
+                .frame(width: 260)
+                .layoutPriority(1)
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, 24)
             .padding(.vertical, 14)
             .background(.ultraThinMaterial)
 
@@ -34,6 +37,55 @@ public struct SettingsView: View {
             if selectedTab == 0 {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
+                        // Privacy & Local Processing (Highlighted Card)
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Prywatność i bezpieczeństwo danych")
+                                .font(.headline)
+
+                            VStack(alignment: .leading, spacing: 12) {
+                                HStack(spacing: 12) {
+                                    Image(systemName: "lock.shield.fill")
+                                        .font(.system(size: 26))
+                                        .foregroundStyle(.green)
+
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("100% lokalne działanie — pełna prywatność")
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+
+                                        Text("Brak połączeń z internetem • Zero telemetrii • Żadnego śledzenia")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+
+                                Text("Aplikacja Tidy działa w całości lokalnie na Twoim komputerze. Twórca programu **nie ma i nigdy nie będzie miał jakiegokolwiek dostępu** do Twoich plików, nazw dokumentów czy zawartości dysku. Żadne dane nie są nigdzie wysyłane.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+
+                                Divider()
+
+                                HStack {
+                                    Text("Autor i deweloper:")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    Text("Dominik Rudkowski")
+                                        .font(.caption)
+                                        .fontWeight(.semibold)
+                                    Spacer()
+                                    Text("Open Source")
+                                        .font(.caption2)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(Capsule().fill(Color.primary.opacity(0.08)))
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            .padding(16)
+                            .tidyGlassCard(cornerRadius: 12)
+                        }
+
                         // Safety & Mode Section
                         VStack(alignment: .leading, spacing: 10) {
                             Text("Tryby działania i bezpieczeństwo")
@@ -56,6 +108,7 @@ public struct SettingsView: View {
                                     Toggle("", isOn: $appState.isDryRun)
                                         .labelsHidden()
                                         .toggleStyle(.switch)
+                                        .layoutPriority(1)
                                 }
 
                                 Divider()
@@ -76,6 +129,7 @@ public struct SettingsView: View {
                                     Toggle("", isOn: $appState.allowPermanentDeletion)
                                         .labelsHidden()
                                         .toggleStyle(.switch)
+                                        .layoutPriority(1)
                                 }
                             }
                             .padding(16)
@@ -107,7 +161,8 @@ public struct SettingsView: View {
                                         }
                                     }
                                     .pickerStyle(.menu)
-                                    .frame(width: 190)
+                                    .frame(width: 180)
+                                    .layoutPriority(1)
                                 }
 
                                 Divider()
@@ -128,6 +183,7 @@ public struct SettingsView: View {
                                     Toggle("", isOn: $showMenuBarExtra)
                                         .labelsHidden()
                                         .toggleStyle(.switch)
+                                        .layoutPriority(1)
                                 }
                             }
                             .padding(16)
@@ -162,6 +218,7 @@ public struct SettingsView: View {
                                 }
                                 .buttonStyle(.borderedProminent)
                                 .tint(appState.hasFullDiskAccess ? .secondary : .accentColor)
+                                .layoutPriority(1)
                             }
                             .padding(16)
                             .tidyGlassCard(cornerRadius: 12)
@@ -196,27 +253,38 @@ public struct SettingsView: View {
                             Text("O programie")
                                 .font(.headline)
 
-                            VStack(alignment: .leading, spacing: 6) {
+                            VStack(alignment: .leading, spacing: 8) {
                                 HStack {
                                     Text("Tidy")
                                         .font(.subheadline)
                                         .fontWeight(.bold)
                                     Spacer()
-                                    Text("Wersja 1.0.1")
+                                    Text("Wersja 1.1.0")
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                 }
 
-                                Text("Uczciwa, lekka i bezpieczna alternatywa dla płatnych rozwiązań. Napisana w 100% w natywnym kodzie Swift i SwiftUI. Bez reklam, bez subskrypcji, bez telemetrii i bez dodatkowych procesów w tle.")
+                                Text("Uczciwa, lekka i bezpieczna alternatywa dla płatnych rozwiązań. Napisana w 100% w natywnym kodzie Swift i SwiftUI. Działa lokalnie na Twoim komputerze, bez reklam, bez subskrypcji, bez telemetrii i bez procesów w tle.")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                     .fixedSize(horizontal: false, vertical: true)
+
+                                Divider()
+
+                                HStack {
+                                    Text("Twórca i programista:")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    Text("Dominik Rudkowski")
+                                        .font(.caption)
+                                        .fontWeight(.semibold)
+                                }
                             }
                             .padding(16)
                             .tidyGlassCard(cornerRadius: 12)
                         }
                     }
-                    .padding(20)
+                    .padding(24)
                 }
             } else {
                 AuditLogView()

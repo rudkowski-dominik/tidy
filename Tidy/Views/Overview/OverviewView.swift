@@ -15,14 +15,16 @@ public struct OverviewView: View {
                         freeBytes: appState.diskInfo.freeSpace,
                         totalBytes: appState.diskInfo.totalCapacity,
                         ringSize: 200,
-                        lineWidth: 20
+                        lineWidth: 20,
+                        showsInnerLabels: true
                     )
+                    .padding(8)
 
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Stan Twojego Maca")
                             .font(.system(size: 28, weight: .bold, design: .rounded))
 
-                        Text("Uczciwa, lekka i bezpieczna alternatywa dla płatnych narzędzi czyszczących. Żadnych ukrytych procesów w tle, żadnych subskrypcji ani reklam.")
+                        Text("Tidy to minimalistyczne, w 100% lokalne narzędzie do utrzymywania porządku na dysku. Żadnych ukrytych procesów, żadnej telemetrii, pełna prywatność Twoich danych.")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)

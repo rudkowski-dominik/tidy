@@ -16,6 +16,7 @@ struct TidyApp: App {
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: true))
+        .defaultSize(width: 980, height: 640)
         .commands {
             CommandGroup(replacing: .newItem) {}
 

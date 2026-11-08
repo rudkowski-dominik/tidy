@@ -84,22 +84,45 @@ public struct SidebarView: View {
         }
         .listStyle(.sidebar)
         .safeAreaInset(edge: .bottom) {
-            VStack(spacing: 8) {
+            VStack(alignment: .leading, spacing: 6) {
                 Divider()
-                HStack(spacing: 8) {
-                    Image(systemName: "shield.checkerboard")
-                        .font(.caption)
-                        .foregroundStyle(appState.hasFullDiskAccess ? .green : .orange)
 
-                    Text(appState.hasFullDiskAccess ? "Pełny dostęp: Aktywny" : "Wymagany pełny dostęp")
+                // Privacy Indicator
+                HStack(spacing: 6) {
+                    Image(systemName: "lock.shield.fill")
+                        .font(.caption2)
+                        .foregroundStyle(.green)
+
+                    Text("100% lokalnie • Prywatność")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+
+                // Author Signature
+                HStack(spacing: 6) {
+                    Image(systemName: "person.crop.circle")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
 
-                    Spacer()
+                    Text("Autor: Dominik Rudkowski")
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 12)
+
+                // Full Disk Access Status
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(appState.hasFullDiskAccess ? Color.green : Color.orange)
+                        .frame(width: 6, height: 6)
+
+                    Text(appState.hasFullDiskAccess ? "Dostęp do dysku: aktywny" : "Wymagany pełny dostęp")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
         }
     }
 }

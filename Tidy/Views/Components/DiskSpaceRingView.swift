@@ -6,13 +6,22 @@ public struct DiskSpaceRingView: View {
     public let totalBytes: Int64
     public var ringSize: CGFloat = 180
     public var lineWidth: CGFloat = 18
+    public var showsInnerLabels: Bool = true
 
-    public init(usedBytes: Int64, freeBytes: Int64, totalBytes: Int64, ringSize: CGFloat = 180, lineWidth: CGFloat = 18) {
+    public init(
+        usedBytes: Int64,
+        freeBytes: Int64,
+        totalBytes: Int64,
+        ringSize: CGFloat = 180,
+        lineWidth: CGFloat = 18,
+        showsInnerLabels: Bool = true
+    ) {
         self.usedBytes = usedBytes
         self.freeBytes = freeBytes
         self.totalBytes = totalBytes
         self.ringSize = ringSize
         self.lineWidth = lineWidth
+        self.showsInnerLabels = showsInnerLabels
     }
 
     private var usedFraction: Double {
@@ -41,22 +50,27 @@ public struct DiskSpaceRingView: View {
                 .rotationEffect(.degrees(-90))
                 .animation(.spring(response: 0.6, dampingFraction: 0.8), value: usedFraction)
 
-            // Inner statistics
-            VStack(spacing: 4) {
+            // Inner statistics or compact drive icon
+            if showsInnerLabels {
+                VStack(spacing: 4) {
+                    Image(systemName: "internaldrive")
+                        .font(.system(size: max(16, ringSize * 0.14), weight: .light))
+                        .foregroundStyle(.secondary)
+
+                    Text(ByteFormatter.string(from: freeBytes))
+                        .font(.system(size: max(13, ringSize * 0.12), weight: .bold, design: .rounded))
+                        .contentTransition(.numericText())
+
+                    Text("wolne z \(ByteFormatter.string(from: totalBytes))")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            } else {
                 Image(systemName: "internaldrive")
-                    .font(.system(size: 26, weight: .light))
-                    .foregroundStyle(.secondary)
-
-                Text(ByteFormatter.string(from: freeBytes))
-                    .font(.system(size: 22, weight: .bold, design: .rounded))
-                    .contentTransition(.numericText())
-
-                Text("wolne z \(ByteFormatter.string(from: totalBytes))")
-                    .font(.caption)
+                    .font(.system(size: max(14, ringSize * 0.38), weight: .medium))
                     .foregroundStyle(.secondary)
             }
         }
         .frame(width: ringSize, height: ringSize)
-        .padding()
     }
 }

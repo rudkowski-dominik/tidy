@@ -27,43 +27,48 @@ public struct DuplicatesView: View {
                     Text("Wieloetapowa weryfikacja (rozmiar → częściowy hash → SHA-256). Oryginał jest chroniony, zaznaczane są tylko zbędne kopie.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
 
                     Spacer(minLength: 16)
 
-                    Button {
-                        chooseCustomFolder()
-                    } label: {
-                        Label("Dodaj folder", systemImage: "folder.badge.plus")
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.regular)
+                    HStack(spacing: 8) {
+                        Button {
+                            chooseCustomFolder()
+                        } label: {
+                            Label("Dodaj folder", systemImage: "folder.badge.plus")
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.regular)
 
-                    Button {
-                        appState.scanDuplicatesOnly(directories: scanFolders)
-                    } label: {
-                        Label("Skanuj", systemImage: "arrow.clockwise")
-                    }
-                    .buttonStyle(.bordered)
+                        Button {
+                            appState.scanDuplicatesOnly(directories: scanFolders)
+                        } label: {
+                            Label("Skanuj", systemImage: "arrow.clockwise")
+                        }
+                        .buttonStyle(.bordered)
 
-                    Button {
-                        var urlsToDelete: [URL] = []
-                        for grp in appState.duplicates {
-                            for f in grp.files where f.isSelected {
-                                urlsToDelete.append(f.url)
+                        Button {
+                            var urlsToDelete: [URL] = []
+                            for grp in appState.duplicates {
+                                for f in grp.files where f.isSelected {
+                                    urlsToDelete.append(f.url)
+                                }
+                            }
+                            appState.requestDeletion(urls: urlsToDelete, categoryName: "Duplikaty plików")
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "trash")
+                                Text("Usuń kopie")
+                                    .fontWeight(.semibold)
                             }
                         }
-                        appState.requestDeletion(urls: urlsToDelete, categoryName: "Duplikaty plików")
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: "trash")
-                            Text("Usuń kopie")
-                                .fontWeight(.semibold)
-                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(totalWastedBytes > 0 ? .orange : .secondary)
+                        .disabled(totalWastedBytes == 0)
+                        .keyboardShortcut(.delete, modifiers: [])
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(totalWastedBytes > 0 ? .orange : .secondary)
-                    .disabled(totalWastedBytes == 0)
-                    .keyboardShortcut(.delete, modifiers: [])
+                    .layoutPriority(1)
                 }
 
                 if !appState.duplicates.isEmpty {

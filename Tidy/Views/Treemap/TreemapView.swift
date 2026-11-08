@@ -22,22 +22,27 @@ public struct TreemapView: View {
                 Text("Wizualna mapa zajętości folderów. Kliknij blok, aby wejść głębiej, lub kliknij prawym przyciskiem, aby przenieść do Kosza.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
 
                 Spacer(minLength: 16)
 
-                Button {
-                    chooseFolder()
-                } label: {
-                    Label("Zmień folder", systemImage: "folder")
-                }
-                .buttonStyle(.bordered)
+                HStack(spacing: 8) {
+                    Button {
+                        chooseFolder()
+                    } label: {
+                        Label("Zmień folder", systemImage: "folder")
+                    }
+                    .buttonStyle(.bordered)
 
-                Button {
-                    appState.scanTreemap(for: currentRootURL)
-                } label: {
-                    Label("Odśwież", systemImage: "arrow.clockwise")
+                    Button {
+                        appState.scanTreemap(for: currentRootURL)
+                    } label: {
+                        Label("Odśwież", systemImage: "arrow.clockwise")
+                    }
+                    .buttonStyle(.bordered)
                 }
-                .buttonStyle(.bordered)
+                .layoutPriority(1)
             }
             .padding()
             .background(.ultraThinMaterial)

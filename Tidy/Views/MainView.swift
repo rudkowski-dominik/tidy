@@ -28,8 +28,9 @@ public struct MainView: View {
                     SettingsView(appState: appState)
                 }
             }
-            .frame(minWidth: 650, minHeight: 500)
+            .frame(minWidth: 520, minHeight: 480)
         }
+        .frame(minWidth: 760, minHeight: 520)
         .sheet(isPresented: $appState.isShowingConfirmationSheet) {
             ConfirmationSheet(appState: appState)
         }

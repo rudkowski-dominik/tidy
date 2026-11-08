@@ -39,6 +39,8 @@ public struct AppUninstallerView: View {
                     Text("Kompletne usuwanie aplikacji wraz z plikami z Biblioteki oraz sprzątanie danych po dawno skasowanych programach.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
 
                     Spacer(minLength: 16)
 
@@ -66,8 +68,10 @@ public struct AppUninstallerView: View {
                             }
                             .buttonStyle(.borderedProminent)
                             .tint(.purple)
+                            .keyboardShortcut(.delete, modifiers: [])
                         }
                     }
+                    .layoutPriority(1)
                 }
 
                 // Row 2: Tabs switcher & Search
