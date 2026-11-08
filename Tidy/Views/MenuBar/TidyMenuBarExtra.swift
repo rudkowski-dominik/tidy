@@ -143,7 +143,7 @@ public struct TidyMenuBarView: View {
 
             // Privacy & Author Footer
             HStack {
-                Text("Autor: Dominik Rudkowski")
+                Text("Twórca: Dominik Rudkowski")
                     .font(.system(size: 10))
                     .foregroundStyle(.secondary)
                 Spacer()

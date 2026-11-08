@@ -104,7 +104,7 @@ public struct SidebarView: View {
                         .font(.caption2)
                         .foregroundStyle(.secondary)
 
-                    Text("Autor: Dominik Rudkowski")
+                    Text("Twórca: Dominik Rudkowski")
                         .font(.caption2)
                         .fontWeight(.medium)
                         .foregroundStyle(.secondary)

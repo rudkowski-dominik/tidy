@@ -8,28 +8,21 @@ public struct SettingsView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            // Header Bar
-            HStack(alignment: .center, spacing: 16) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("Dostosuj tryb działania aplikacji, uprawnienia oraz historię.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                Spacer(minLength: 16)
+            // Centered Tab Switcher Bar
+            HStack {
+                Spacer()
 
                 Picker("", selection: $selectedTab) {
                     Text("Opcje i bezpieczeństwo").tag(0)
                     Text("Dziennik operacji").tag(1)
                 }
                 .pickerStyle(.segmented)
-                .frame(width: 260)
-                .layoutPriority(1)
+                .frame(width: 320)
+
+                Spacer()
             }
             .padding(.horizontal, 24)
-            .padding(.vertical, 14)
+            .padding(.vertical, 12)
             .background(.ultraThinMaterial)
 
             Divider()
@@ -37,6 +30,11 @@ public struct SettingsView: View {
             if selectedTab == 0 {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
+                        Text("Dostosuj tryb działania aplikacji, uprawnienia systemowe oraz wygląd programu.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .padding(.top, 2)
+
                         // Privacy & Local Processing (Highlighted Card)
                         VStack(alignment: .leading, spacing: 10) {
                             Text("Prywatność i bezpieczeństwo danych")
@@ -67,7 +65,7 @@ public struct SettingsView: View {
                                 Divider()
 
                                 HStack {
-                                    Text("Autor i deweloper:")
+                                    Text("Twórca:")
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                     Text("Dominik Rudkowski")
@@ -259,7 +257,7 @@ public struct SettingsView: View {
                                         .font(.subheadline)
                                         .fontWeight(.bold)
                                     Spacer()
-                                    Text("Wersja 1.1.0")
+                                    Text("Wersja 1.1.2")
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                 }
@@ -272,7 +270,7 @@ public struct SettingsView: View {
                                 Divider()
 
                                 HStack {
-                                    Text("Twórca i programista:")
+                                    Text("Twórca:")
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                     Text("Dominik Rudkowski")
