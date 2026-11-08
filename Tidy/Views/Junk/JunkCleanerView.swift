@@ -67,6 +67,7 @@ public struct JunkCleanerView: View {
                         .buttonStyle(.borderedProminent)
                         .tint(selectedTotalBytes > 0 ? .accentColor : .secondary)
                         .disabled(selectedTotalBytes == 0)
+                        .keyboardShortcut(.delete, modifiers: [])
                     }
                 }
 

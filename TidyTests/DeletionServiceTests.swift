@@ -45,5 +45,13 @@ final class DeletionServiceTests: XCTestCase {
 
         XCTAssertEqual(report.succeededURLs.count, 1)
         XCTAssertFalse(FileManager.default.fileExists(atPath: testFile.path), "File should no longer be at original path")
+        XCTAssertFalse(report.trashedRecords.isEmpty, "Trashed records should be tracked for undo capability")
+
+        // Test Audit Log Export
+        let csv = await AuditLogger.shared.exportCSV()
+        XCTAssertTrue(csv.contains("ZwolnioneBajty"), "CSV export must contain header")
+
+        let json = await AuditLogger.shared.exportJSON()
+        XCTAssertTrue(json.starts(with: "["), "JSON export must be an array")
     }
 }

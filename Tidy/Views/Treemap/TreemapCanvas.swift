@@ -5,6 +5,7 @@ public struct TreemapCanvas: View {
     public let onSelect: (TreemapNode) -> Void
     public let onDelete: (TreemapNode) -> Void
     public let onReveal: (TreemapNode) -> Void
+    public var onPreview: ((TreemapNode) -> Void)? = nil
 
     @State private var hoveredNode: TreemapNode? = nil
 
@@ -79,8 +80,12 @@ public struct TreemapCanvas: View {
                             Button("Pokaż w Finderze") {
                                 onReveal(node)
                             }
-                            Button("Szybki podgląd") {
-                                QuickLookHelper.preview(url: node.url)
+                            Button("Szybki podgląd (Quick Look)") {
+                                if let onPreview = onPreview {
+                                    onPreview(node)
+                                } else {
+                                    QuickLookHelper.revealInFinder(url: node.url)
+                                }
                             }
                             Divider()
                             Button("Przenieś do Kosza", role: .destructive) {

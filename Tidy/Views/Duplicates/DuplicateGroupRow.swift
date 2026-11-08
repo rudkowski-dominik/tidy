@@ -2,6 +2,7 @@ import SwiftUI
 
 public struct DuplicateGroupRow: View {
     @Binding var group: DuplicateGroup
+    var onPreview: ((URL) -> Void)? = nil
     @State private var isExpanded: Bool = true
 
     public var body: some View {
@@ -118,14 +119,14 @@ public struct DuplicateGroupRow: View {
                             }
 
                             Button {
-                                QuickLookHelper.preview(url: file.url)
+                                onPreview?(file.url)
                             } label: {
                                 Image(systemName: "eye")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
                             .buttonStyle(.plain)
-                            .help("Szybki podgląd")
+                            .help("Szybki podgląd (Quick Look)")
 
                             Button {
                                 QuickLookHelper.revealInFinder(url: file.url)

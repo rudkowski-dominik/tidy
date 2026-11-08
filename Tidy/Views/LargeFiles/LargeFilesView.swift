@@ -1,4 +1,5 @@
 import SwiftUI
+import QuickLook
 
 public struct LargeFilesView: View {
     @ObservedObject var appState: AppState
@@ -7,6 +8,7 @@ public struct LargeFilesView: View {
     @State private var selectedCategory: FileCategory = .all
     @State private var selectedTab: Int = 0 // 0: Large Files, 1: Unused Apps
     @State private var unusedMonths: Int = 3
+    @State private var previewURL: URL? = nil
 
     private var filteredLargeFiles: [FileItem] {
         appState.largeFiles.filter { item in
@@ -63,6 +65,7 @@ public struct LargeFilesView: View {
                             .buttonStyle(.borderedProminent)
                             .tint(selectedFilesBytes > 0 ? .purple : .secondary)
                             .disabled(selectedFilesBytes == 0)
+                            .keyboardShortcut(.delete, modifiers: [])
                         }
                     }
                 }
@@ -174,7 +177,9 @@ public struct LargeFilesView: View {
                         ForEach($appState.largeFiles) { $item in
                             if selectedCategory == .all || item.category == selectedCategory {
                                 if item.size >= Int64(minSizeMB * 1024 * 1024) {
-                                    LargeFileRow(item: $item)
+                                    LargeFileRow(item: $item, onPreview: { url in
+                                        self.previewURL = url
+                                    })
                                 }
                             }
                         }
@@ -201,6 +206,7 @@ public struct LargeFilesView: View {
             }
         }
         .navigationTitle("Duże i nieużywane")
+        .quickLookPreview($previewURL)
     }
 
     private func toggleSelectAllLargeFiles() {
@@ -219,6 +225,7 @@ public struct LargeFilesView: View {
 
 private struct LargeFileRow: View {
     @Binding var item: FileItem
+    var onPreview: ((URL) -> Void)? = nil
 
     var body: some View {
         HStack(spacing: 12) {
@@ -268,14 +275,14 @@ private struct LargeFileRow: View {
                 .fontWeight(.bold)
 
             Button {
-                QuickLookHelper.preview(url: item.url)
+                onPreview?(item.url)
             } label: {
                 Image(systemName: "eye")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             .buttonStyle(.plain)
-            .help("Podgląd")
+            .help("Szybki podgląd (Quick Look)")
 
             Button {
                 QuickLookHelper.revealInFinder(url: item.url)

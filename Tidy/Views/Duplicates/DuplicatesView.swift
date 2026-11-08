@@ -1,9 +1,13 @@
 import SwiftUI
 import AppKit
+import QuickLook
+import UniformTypeIdentifiers
 
 public struct DuplicatesView: View {
     @ObservedObject var appState: AppState
     @State private var scanFolders: [URL] = DuplicateScanner.defaultScanDirectories
+    @State private var previewURL: URL? = nil
+    @State private var isTargetedForDrop: Bool = false
 
     private var totalWastedBytes: Int64 {
         appState.duplicates.reduce(0) { $0 + $1.wastedBytes }
@@ -59,6 +63,7 @@ public struct DuplicatesView: View {
                     .buttonStyle(.borderedProminent)
                     .tint(totalWastedBytes > 0 ? .orange : .secondary)
                     .disabled(totalWastedBytes == 0)
+                    .keyboardShortcut(.delete, modifiers: [])
                 }
 
                 if !appState.duplicates.isEmpty {
@@ -143,7 +148,9 @@ public struct DuplicatesView: View {
                 ScrollView {
                     LazyVStack(spacing: 12) {
                         ForEach($appState.duplicates) { $group in
-                            DuplicateGroupRow(group: $group)
+                            DuplicateGroupRow(group: $group, onPreview: { url in
+                                self.previewURL = url
+                            })
                         }
                     }
                     .padding()
@@ -151,6 +158,41 @@ public struct DuplicatesView: View {
             }
         }
         .navigationTitle("Duplikaty")
+        .quickLookPreview($previewURL)
+        .onDrop(of: [.fileURL], isTargeted: $isTargetedForDrop) { providers in
+            guard let provider = providers.first else { return false }
+            _ = provider.loadObject(ofClass: URL.self) { url, _ in
+                guard let url = url, (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true else { return }
+                Task { @MainActor in
+                    if !scanFolders.contains(url) {
+                        scanFolders.append(url)
+                    }
+                    appState.scanDuplicatesOnly(directories: scanFolders)
+                }
+            }
+            return true
+        }
+        .overlay {
+            if isTargetedForDrop {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(.ultraThinMaterial)
+                    VStack(spacing: 12) {
+                        Image(systemName: "folder.badge.plus")
+                            .font(.system(size: 48))
+                            .foregroundStyle(.orange)
+                        Text("Upuść folder, aby wyszukać w nim duplikaty")
+                            .font(.headline)
+                    }
+                    .padding(24)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .strokeBorder(Color.orange, style: StrokeStyle(lineWidth: 2, dash: [8]))
+                    )
+                }
+                .padding(20)
+            }
+        }
     }
 
     private func chooseCustomFolder() {

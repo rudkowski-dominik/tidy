@@ -3,6 +3,7 @@ import SwiftUI
 public struct SettingsView: View {
     @ObservedObject var appState: AppState
     @ObservedObject private var iconManager = AppIconManager.shared
+    @AppStorage("tidy_show_menu_bar_extra") private var showMenuBarExtra: Bool = false
     @State private var selectedTab: Int = 0 // 0: Ogólne i Bezpieczeństwo, 1: Dziennik operacji
 
     public var body: some View {
@@ -107,6 +108,26 @@ public struct SettingsView: View {
                                     }
                                     .pickerStyle(.menu)
                                     .frame(width: 190)
+                                }
+
+                                Divider()
+
+                                HStack(alignment: .center, spacing: 16) {
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text("Ikona w pasku menu (Menu Bar)")
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                        Text("Wyświetlaj Tidy w górnym pasku systemowym z szybkim podglądem wolnego miejsca i skrótem do skanowania.")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                    }
+
+                                    Spacer(minLength: 16)
+
+                                    Toggle("", isOn: $showMenuBarExtra)
+                                        .labelsHidden()
+                                        .toggleStyle(.switch)
                                 }
                             }
                             .padding(16)

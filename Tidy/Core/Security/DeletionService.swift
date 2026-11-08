@@ -27,15 +27,42 @@ public enum DeletionError: LocalizedError, Sendable {
     }
 }
 
+public struct TrashedItemRecord: Sendable, Codable {
+    public let originalPath: String
+    public let trashPath: String
+
+    public init(originalPath: String, trashPath: String) {
+        self.originalPath = originalPath
+        self.trashPath = trashPath
+    }
+}
+
 public struct DeletionReport: Sendable {
     public let mode: DeletionMode
     public let succeededURLs: [URL]
+    public let trashedRecords: [TrashedItemRecord]
     public let failedItems: [URL: String]
     public let totalBytesFreed: Int64
     public let duration: TimeInterval
 
     public var isCompleteSuccess: Bool {
         failedItems.isEmpty
+    }
+
+    public init(
+        mode: DeletionMode,
+        succeededURLs: [URL],
+        trashedRecords: [TrashedItemRecord] = [],
+        failedItems: [URL: String],
+        totalBytesFreed: Int64,
+        duration: TimeInterval
+    ) {
+        self.mode = mode
+        self.succeededURLs = succeededURLs
+        self.trashedRecords = trashedRecords
+        self.failedItems = failedItems
+        self.totalBytesFreed = totalBytesFreed
+        self.duration = duration
     }
 }
 
@@ -58,6 +85,7 @@ public actor DeletionService {
         let effectiveMode = dryRun ? .dryRun : mode
 
         var succeeded: [URL] = []
+        var trashedRecords: [TrashedItemRecord] = []
         var failed: [URL: String] = [:]
         var bytesFreed: Int64 = 0
 
@@ -90,9 +118,16 @@ public actor DeletionService {
             do {
                 switch effectiveMode {
                 case .trash:
-                    try fileManager.trashItem(at: standardized, resultingItemURL: nil)
+                    var resultingURL: NSURL?
+                    try fileManager.trashItem(at: standardized, resultingItemURL: &resultingURL)
                     succeeded.append(standardized)
                     bytesFreed += calculatedSize
+                    if let resURL = resultingURL as? URL {
+                        trashedRecords.append(TrashedItemRecord(
+                            originalPath: standardized.path(percentEncoded: false),
+                            trashPath: resURL.path(percentEncoded: false)
+                        ))
+                    }
 
                 case .permanent:
                     try fileManager.removeItem(at: standardized)
@@ -111,6 +146,7 @@ public actor DeletionService {
         let report = DeletionReport(
             mode: effectiveMode,
             succeededURLs: succeeded,
+            trashedRecords: trashedRecords,
             failedItems: failed,
             totalBytesFreed: bytesFreed,
             duration: duration
@@ -120,6 +156,7 @@ public actor DeletionService {
         await AuditLogger.shared.record(
             operation: effectiveMode,
             succeeded: succeeded.map { $0.path(percentEncoded: false) },
+            trashedRecords: trashedRecords,
             failed: failed.mapKeys { $0.path(percentEncoded: false) },
             bytesFreed: bytesFreed
         )

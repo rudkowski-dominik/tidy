@@ -1,11 +1,15 @@
 import SwiftUI
 import AppKit
+import QuickLook
+import UniformTypeIdentifiers
 
 public struct TreemapView: View {
     @ObservedObject var appState: AppState
 
     @State private var navigationStack: [TreemapNode] = []
     @State private var currentRootURL: URL = FileManager.default.homeDirectoryForCurrentUser
+    @State private var previewURL: URL? = nil
+    @State private var isTargetedForDrop: Bool = false
 
     private var currentNode: TreemapNode? {
         navigationStack.last ?? appState.treemapRoot
@@ -88,6 +92,9 @@ public struct TreemapView: View {
                     },
                     onReveal: { child in
                         QuickLookHelper.revealInFinder(url: child.url)
+                    },
+                    onPreview: { child in
+                        self.previewURL = child.url
                     }
                 )
                 .padding(12)
@@ -129,6 +136,40 @@ public struct TreemapView: View {
             }
         }
         .navigationTitle("Mapa miejsca")
+        .quickLookPreview($previewURL)
+        .onDrop(of: [.fileURL], isTargeted: $isTargetedForDrop) { providers in
+            guard let provider = providers.first else { return false }
+            _ = provider.loadObject(ofClass: URL.self) { url, _ in
+                guard let url = url, (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true else { return }
+                Task { @MainActor in
+                    self.currentRootURL = url
+                    self.navigationStack.removeAll()
+                    appState.scanTreemap(for: url)
+                }
+            }
+            return true
+        }
+        .overlay {
+            if isTargetedForDrop {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(.ultraThinMaterial)
+                    VStack(spacing: 12) {
+                        Image(systemName: "square.grid.3x3.topleft.filled")
+                            .font(.system(size: 48))
+                            .foregroundStyle(.tint)
+                        Text("Upuść folder, aby wyświetlić jego mapę miejsca")
+                            .font(.headline)
+                    }
+                    .padding(24)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .strokeBorder(Color.accentColor, style: StrokeStyle(lineWidth: 2, dash: [8]))
+                    )
+                }
+                .padding(20)
+            }
+        }
         .onAppear {
             if appState.treemapRoot == nil {
                 appState.scanTreemap(for: currentRootURL)
